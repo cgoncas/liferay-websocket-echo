@@ -29,7 +29,10 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	immediate = true,
-	property = {"org.osgi.http.websocket.endpoint.path=/o/echo"},
+	property = {
+		"org.osgi.http.websocket.endpoint.path=" +
+			EchoWebSocketEndpoint.ECHO_WEBSOCKET_PATH
+	},
 	service = Endpoint.class
 )
 public class EchoWebSocketEndpoint extends Endpoint {
