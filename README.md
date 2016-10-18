@@ -17,3 +17,13 @@ We are going to use [Blade](https://dev.liferay.com/develop/tutorials/-/knowledg
 blade create -t mvcportlet -p com.liferay.websocket.example.echo -c EchoPortlet echo-portlet
 ```
 
+### Add websocket dependency
+We need to add the dependencies in the [build file](build.gradle), as shown below:
+
+```gradle
+dependencies {
+...
+    compileOnly group: "javax.websocket", name: "javax.websocket-api", version: "1.1"
+...
+}
+```
