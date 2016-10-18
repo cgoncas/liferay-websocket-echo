@@ -27,3 +27,43 @@ dependencies {
 ...
 }
 ```
+
+### Create a Echo WebSocket Endpoint
+Now we can create a [endpoint](src/main/java/com/liferay/websocket/example/echo/endpoint/EchoWebSocketEndpoint.java) that returns to the client the same message that receives.
+
+```java
+public class EchoWebSocketEndpoint extends Endpoint {
+
+	@Override
+	public void onOpen(final Session session, EndpointConfig endpointConfig) {
+		session.addMessageHandler(
+			new MessageHandler.Whole<String>() {
+
+				@Override
+				public void onMessage(String text) {
+					try {
+						RemoteEndpoint.Basic remoteEndpoint =
+							session.getBasicRemote();
+
+						remoteEndpoint.sendText(text);
+					}
+					catch (IOException ioe) {
+						throw new RuntimeException(ioe);
+					}
+				}
+
+			});
+	}
+
+}
+```
+
+To register this endpoint in the path `\o\echo` we will use declarative services as follow:
+
+```java
+@Component(
+	immediate = true,
+	property = {"org.osgi.http.websocket.endpoint.path=/o/echo"},
+	service = Endpoint.class
+)
+```
