@@ -7,6 +7,8 @@ buildscript {
 	repositories {
 		mavenLocal()
 
+		mavenCentral()
+
 		maven {
 			url "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
 		}
@@ -31,6 +33,11 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.core", version: "5.0.0"
 
 	portalDependency group: "com.liferay", name: "com.liferay.websocket.whiteboard", version: "1.0.0"
+
+	testIntegrationCompile group: "com.liferay.arquillian", name: "com.liferay.arquillian.arquillian-container-liferay", version: "1.0.5"
+	testIntegrationCompile group: "org.jboss.arquillian.junit", name: "arquillian-junit-container", version: "1.1.11.Final"
+	testIntegrationCompile group: "junit", name: "junit", version: "4.12"
+	testIntegrationCompile group: "org.jboss.arquillian.graphene", name: "graphene-webdriver", version: "2.1.0.Final"
 }
 
 import de.undercouch.gradle.tasks.download.Download
@@ -67,6 +74,16 @@ unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
 setUpTestableTomcat.dependsOn copyPortalExt
+
+jar {
+	if (project.hasProperty('dir')) {
+		destinationDir = file(dir);
+	}
+}
+
+startTestableTomcat {
+	checkTimeout = 10 * 60 * 1000
+}
 
 repositories {
 	mavenLocal()
