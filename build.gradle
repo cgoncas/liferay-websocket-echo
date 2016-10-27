@@ -18,9 +18,9 @@ buildscript {
 apply plugin: "com.liferay.plugin"
 apply plugin: 'de.undercouch.download'
 
-configurations {
-	portalDependency
-}
+//configurations {
+//	portalDependency
+//}
 
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.5.0"
@@ -32,7 +32,7 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.compendium", version: "5.0.0"
 	compileOnly group: "org.osgi", name: "org.osgi.core", version: "5.0.0"
 
-	portalDependency group: "com.liferay", name: "com.liferay.websocket.whiteboard", version: "1.0.0"
+	//portalDependency group: "com.liferay", name: "com.liferay.websocket.whiteboard", version: "1.0.0"
 
 	testIntegrationCompile group: "com.liferay.arquillian", name: "com.liferay.arquillian.arquillian-container-liferay", version: "1.0.5"
 	testIntegrationCompile group: "org.jboss.arquillian.junit", name: "arquillian-junit-container", version: "1.1.11.Final"
@@ -66,7 +66,7 @@ task copyPortalExt(type: Copy) {
 }
 
 task copyPortalDependencies(type: Copy) {
-	from configurations.portalDependency
+	from file('portalDependency/com.liferay.websocket.whiteboard-1.0.0.jar')
 	into "${liferay.liferayHome}/osgi/modules"
 }
 
