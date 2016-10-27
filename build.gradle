@@ -1,6 +1,7 @@
 buildscript {
 	dependencies {
 		classpath group: "com.liferay", name: "com.liferay.gradle.plugins", version: "2.0.10"
+		classpath 'de.undercouch:gradle-download-task:3.1.1'
 	}
 
 	repositories {
@@ -13,6 +14,11 @@ buildscript {
 }
 
 apply plugin: "com.liferay.plugin"
+apply plugin: 'de.undercouch.download'
+
+configurations {
+	portalDependency
+}
 
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.5.0"
@@ -23,7 +29,44 @@ dependencies {
 	compileOnly group: "jstl", name: "jstl", version: "1.2"
 	compileOnly group: "org.osgi", name: "org.osgi.compendium", version: "5.0.0"
 	compileOnly group: "org.osgi", name: "org.osgi.core", version: "5.0.0"
+
+	portalDependency group: "com.liferay", name: "com.liferay.websocket.whiteboard", version: "1.0.0"
 }
+
+import de.undercouch.gradle.tasks.download.Download
+
+def bundle = 'liferay/bundle.zip'
+
+liferay {
+	liferayHome = 'liferay/liferay-ce-portal-7.0-ga3'
+}
+
+task downloadLiferay(type: Download) {
+	src 'http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.2%20GA3/liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip?r=&ts=1476801340&use_mirror=kent'
+	dest  file(bundle)
+	overwrite false
+}
+
+task unzipLiferay(type: Copy) {
+	from(zipTree(bundle))
+	into 'liferay'
+	enabled !(file(liferay.liferayHome).exists())
+}
+
+task copyPortalExt(type: Copy) {
+	from file('src/testIntegration/resources/portal-ext.properties')
+	into "${liferay.liferayHome}"
+}
+
+task copyPortalDependencies(type: Copy) {
+	from configurations.portalDependency
+	into "${liferay.liferayHome}/osgi/modules"
+}
+
+unzipLiferay.dependsOn downloadLiferay
+copyPortalDependencies.dependsOn unzipLiferay
+copyPortalExt.dependsOn copyPortalDependencies
+setUpTestableTomcat.dependsOn copyPortalExt
 
 repositories {
 	mavenLocal()
