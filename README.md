@@ -205,3 +205,34 @@ Here you can see a full example of the Websocket Clint
 	}
 </script>
 ```
+
+## Prepare the Liferay Environment
+
+### Register a websocket ServletContext
+
+We will need to register a javax.servlet.ServletContext service with the property websocket.active set to true.
+
+```java
+@Component(immediate = true)
+public class Configurator {
+
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		java.util.Dictionary<String, Object> servletContextProps =
+			new Hashtable<>();
+
+		servletContextProps.put("websocket.active", Boolean.TRUE);
+
+		bundleContext.registerService(
+			ServletContext.class, _servletContext, servletContextProps);
+	}
+
+	@Reference(target = "(original.bean=true)")
+	private void setServletContext(ServletContext servletContext) {
+		_servletContext = servletContext;
+	}
+
+	private ServletContext _servletContext;
+
+}
+```
