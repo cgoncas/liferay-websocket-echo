@@ -91,7 +91,7 @@ public class EchoWebsocketFuntionalTest {
 	@RunAsClient
 	@Test
 	public void testConnect() {
-		_browser.get(_portlerURL.toExternalForm());
+		_browser.get(_portletURL.toExternalForm());
 
 		_connect.click();
 
@@ -110,7 +110,7 @@ public class EchoWebsocketFuntionalTest {
 	@RunAsClient
 	@Test
 	public void testDisconnect() {
-		_browser.get(_portlerURL.toExternalForm());
+		_browser.get(_portletURL.toExternalForm());
 
 		_connect.click();
 
@@ -131,7 +131,7 @@ public class EchoWebsocketFuntionalTest {
 	@RunAsClient
 	@Test
 	public void testSendMessage() {
-		_browser.get(_portlerURL.toExternalForm());
+		_browser.get(_portletURL.toExternalForm());
 
 		_connect.click();
 
@@ -179,7 +179,7 @@ public class EchoWebsocketFuntionalTest {
 	private WebElement _message;
 
 	@PortalURL("echo_portlet")
-	private URL _portlerURL;
+	private URL _portletURL;
 
 	@FindBy(css = "button[id$=send]")
 	private WebElement _send;
