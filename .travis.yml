@@ -14,3 +14,7 @@ before_install:
 
 script:
   - './gradlew testIntegration'
+
+cache.directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/caches/
