@@ -12,8 +12,12 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 
+before_script:
+  - ./gradlew downloadLiferay
+  - ./gradlew unzipLiferay
+
 script:
-  - './gradlew testIntegration'
+  - ./gradlew testIntegration
 
 cache.directories:
   - $HOME/.gradle/caches/
