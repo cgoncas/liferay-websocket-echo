@@ -17,6 +17,7 @@ before_script:
   - ./gradlew unzipLiferay
   - ./gradlew setUpTestableTomcat
   - ./liferay/liferay-ce-portal-7.0-ga3/tomcat-8.0.32/bin/catalina.sh run &
+  - ./gradlew checkLiferay
 
 script:
   - ./gradlew testIntegration
