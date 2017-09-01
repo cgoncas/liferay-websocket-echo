@@ -85,6 +85,29 @@ startTestableTomcat {
 	checkTimeout = 10 * 60 * 1000
 }
 
+task checkLiferay() {
+	doLast {
+		def url = "http://localhost:8080"
+
+		println("Trying to reach " + url)
+
+		while (true) {
+			try {
+				print(".")
+
+				url.toURL().text
+
+				println("Portal startup finished")
+
+				break
+			}
+			catch (Exception e) {
+				Thread.sleep(1000)
+			}
+		}
+	}
+}
+
 repositories {
 	mavenLocal()
 
