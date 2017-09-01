@@ -13,14 +13,15 @@ before_install:
   - sleep 3 # give xvfb some time to start
 
 before_script:
-  - ./gradlew downloadLiferay
-  - ./gradlew unzipLiferay
-  - ./gradlew setUpTestableTomcat
-  - ./liferay/liferay-ce-portal-7.0-ga3/tomcat-8.0.32/bin/catalina.sh run &
+  - ./gradlew copyPortalExt
+  - ./gradlew setupTestableTomcat
+  - ./liferay/liferay-ce-portal-7.0-ga3/tomcat-8.0.32/bin/startup.sh
+  - tail -f ./liferay/liferay-ce-portal-7.0-ga3/tomcat-8.0.32/logs/catalina.out &
   - ./gradlew checkLiferay
 
 script:
   - ./gradlew testIntegration
+  - ls liferay
 
 cache.directories:
   - $HOME/.gradle/caches/

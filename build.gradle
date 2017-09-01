@@ -73,7 +73,6 @@ task copyPortalDependencies(type: Copy) {
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
-setUpTestableTomcat.dependsOn copyPortalExt
 
 jar {
 	if (project.hasProperty('dir')) {
