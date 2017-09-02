@@ -183,16 +183,56 @@ task overrideFormsWorkflow {
 		def tree = fileTree('build/lpkg/formsWorkflow')
 		tree.include '*workflow*'
 		tree.include '*polls*'
+		tree.include '*calendar*'
 		tree.each { it.delete() }
 	}
 
 	finalizedBy zipFormsWorkflow
 }
 
+task copyWebExpetience(type:Copy) {
+	from 'build/lpkg/Liferay CE Web Experience..lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipWebExpetience(type:Zip) {
+	from 'build/lpkg/webExpetience'
+	include '*'
+	archiveName 'Liferay CE Web Experience.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyWebExpetience
+}
+task overrideWebExpetience {
+	dependsOn overrideFormsWorkflow
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Web Experience.lpkg'))
+			into 'build/lpkg/webExpetience'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/webExpetience-liferay-marketplace.properties')
+			into 'build/lpkg/webExpetience'
+			rename { String name ->
+				name.replace("webExpetience-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/webExpetience')
+		tree.include '*asset*'
+		tree.include '*journal.content*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipWebExpetience
+}
+
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
-overrideFoundation.dependsOn copyPortalExt
+overrideWebExpetience.dependsOn copyPortalExt
+
 jar {
 	if (project.hasProperty('dir')) {
 		destinationDir = file(dir);
