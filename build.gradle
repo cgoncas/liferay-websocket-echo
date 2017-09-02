@@ -113,7 +113,7 @@ task overrideCollaboration {
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
-
+overrideCollaboration.dependsOn copyPortalExt
 jar {
 	if (project.hasProperty('dir')) {
 		destinationDir = file(dir);
