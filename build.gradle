@@ -103,6 +103,7 @@ task overrideCollaboration {
 		def tree = fileTree('build/lpkg/collaboration')
 		tree.include '*wiki*'
 		tree.include '*blog*'
+		tree.include '*announcements*'
 		tree.each { it.delete() }
 	}
 
