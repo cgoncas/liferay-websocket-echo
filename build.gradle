@@ -70,6 +70,45 @@ task copyPortalDependencies(type: Copy) {
 	into "${liferay.liferayHome}/osgi/modules"
 }
 
+task copyCollaboration(type:Copy) {
+	from 'build/lpkg/Liferay CE Collaboration.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipCollaboration(type:Zip) {
+	from 'build/lpkg/collaboration'
+	include '*'
+	archiveName 'Liferay CE Collaboration.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyCollaboration
+}
+
+task overrideCollaboration {
+	dependsOn copyPortalExt
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Collaboration.lpkg'))
+			into 'build/lpkg/collaboration'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/collaboration-liferay-marketplace.properties')
+			into 'build/lpkg/collaboration'
+			rename { String name ->
+				name.replace("collaboration-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/collaboration')
+		tree.include '*wiki*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipCollaboration
+}
+
+
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
