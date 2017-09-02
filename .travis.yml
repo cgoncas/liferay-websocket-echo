@@ -9,6 +9,7 @@ cache:
   directories:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
+  - liferay
 
 jdk:
   - oraclejdk8
@@ -29,8 +30,9 @@ before_script:
 
 script:
   - ./gradlew testIntegration
-  - ls liferay
 
 before_cache:
     - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
     - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+    - rm -fr liferay/liferay-ce-portal-7.0-ga3/data/elasticsearch/
+    - rm -fr liferay/liferay-ce-portal-7.0-ga3/logs/
