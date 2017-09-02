@@ -70,9 +70,168 @@ task copyPortalDependencies(type: Copy) {
 	into "${liferay.liferayHome}/osgi/modules"
 }
 
+task copyCollaboration(type:Copy) {
+	from 'build/lpkg/Liferay CE Collaboration.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipCollaboration(type:Zip) {
+	from 'build/lpkg/collaboration'
+	include '*'
+	archiveName 'Liferay CE Collaboration.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyCollaboration
+}
+
+task overrideCollaboration {
+	dependsOn copyPortalExt
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Collaboration.lpkg'))
+			into 'build/lpkg/collaboration'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/collaboration-liferay-marketplace.properties')
+			into 'build/lpkg/collaboration'
+			rename { String name ->
+				name.replace("collaboration-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/collaboration')
+		tree.include '*wiki*'
+		tree.include '*blog*'
+		tree.include '*announcements*'
+		tree.include '*bookmarks*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipCollaboration
+}
+
+task copyFoundation(type:Copy) {
+	from 'build/lpkg/Liferay CE Foundation.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipFoundation(type:Zip) {
+	from 'build/lpkg/foundation'
+	include '*'
+	archiveName 'Liferay CE Foundation.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyFoundation
+}
+
+task overrideFoundation {
+	dependsOn overrideCollaboration
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Foundation.lpkg'))
+			into 'build/lpkg/foundation'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/foundation-liferay-marketplace.properties')
+			into 'build/lpkg/foundation'
+			rename { String name ->
+				name.replace("foundation-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/foundation')
+		tree.include '*product-app-theme*'
+		tree.include '*user-dashboard-theme*'
+		tree.include '*user-profile-theme*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipFoundation
+}
+
+task copyFormsWorkflow(type:Copy) {
+	from 'build/lpkg/Liferay CE Forms and Workflow.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipFormsWorkflow(type:Zip) {
+	from 'build/lpkg/formsWorkflow'
+	include '*'
+	archiveName 'Liferay CE Forms and Workflow.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyFormsWorkflow
+}
+task overrideFormsWorkflow {
+	dependsOn overrideFoundation
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Forms and Workflow.lpkg'))
+			into 'build/lpkg/formsWorkflow'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/formsWorkflow-liferay-marketplace.properties')
+			into 'build/lpkg/formsWorkflow'
+			rename { String name ->
+				name.replace("formsWorkflow-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/formsWorkflow')
+		tree.include '*workflow*'
+		tree.include '*polls*'
+		tree.include '*calendar*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipFormsWorkflow
+}
+
+task copyWebExpetience(type:Copy) {
+	from 'build/lpkg/Liferay CE Web Experience..lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipWebExpetience(type:Zip) {
+	from 'build/lpkg/webExpetience'
+	include '*'
+	archiveName 'Liferay CE Web Experience.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyWebExpetience
+}
+task overrideWebExpetience {
+	dependsOn overrideFormsWorkflow
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Web Experience.lpkg'))
+			into 'build/lpkg/webExpetience'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/webExpetience-liferay-marketplace.properties')
+			into 'build/lpkg/webExpetience'
+			rename { String name ->
+				name.replace("webExpetience-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/webExpetience')
+		tree.include '*asset*'
+		tree.include '*journal.content*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipWebExpetience
+}
+
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
+overrideWebExpetience.dependsOn copyPortalExt
 
 jar {
 	if (project.hasProperty('dir')) {
