@@ -111,11 +111,50 @@ task overrideCollaboration {
 	finalizedBy zipCollaboration
 }
 
+task copyFoundation(type:Copy) {
+	from 'build/lpkg/Liferay CE Foundation.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipFoundation(type:Zip) {
+	from 'build/lpkg/foundation'
+	include '*'
+	archiveName 'Liferay CE Foundation.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyFoundation
+}
+
+task overrideFoundation {
+	dependsOn copyPortalExt
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Foundation.lpkg'))
+			into 'build/lpkg/foundation'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/foundation-liferay-marketplace.properties')
+			into 'build/lpkg/foundation'
+			rename { String name ->
+				name.replace("foundation-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/foundation')
+		tree.include '*product-app-theme*'
+		tree.include '*user-dashboard-theme*'
+		tree.include '*user-profile-theme*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipFoundation
+}
 
 unzipLiferay.dependsOn downloadLiferay
 copyPortalDependencies.dependsOn unzipLiferay
 copyPortalExt.dependsOn copyPortalDependencies
-overrideCollaboration.dependsOn copyPortalExt
+overrideFoundation.dependsOn copyPortalExt
 jar {
 	if (project.hasProperty('dir')) {
 		destinationDir = file(dir);
