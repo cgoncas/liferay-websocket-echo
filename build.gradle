@@ -126,7 +126,7 @@ task zipFoundation(type:Zip) {
 }
 
 task overrideFoundation {
-	dependsOn copyPortalExt
+	dependsOn overrideCollaboration
 
 	doLast {
 		copy {
@@ -149,6 +149,44 @@ task overrideFoundation {
 	}
 
 	finalizedBy zipFoundation
+}
+
+task copyFormsWorkflow(type:Copy) {
+	from 'build/lpkg/Liferay CE Forms and Workflow.lpkg'
+	into 'liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/'
+}
+
+task zipFormsWorkflow(type:Zip) {
+	from 'build/lpkg/formsWorkflow'
+	include '*'
+	archiveName 'Liferay CE Forms and Workflow.lpkg'
+	destinationDir(file('build/lpkg/'))
+
+	finalizedBy copyFormsWorkflow
+}
+task overrideFormsWorkflow {
+	dependsOn overrideFoundation
+
+	doLast {
+		copy {
+			from(zipTree('liferay/liferay-ce-portal-7.0-ga3/osgi/marketplace/Liferay CE Forms and Workflow.lpkg'))
+			into 'build/lpkg/formsWorkflow'
+		}
+		copy {
+			from('src/testIntegration/resources/lpkg/formsWorkflow-liferay-marketplace.properties')
+			into 'build/lpkg/formsWorkflow'
+			rename { String name ->
+				name.replace("formsWorkflow-liferay-marketplace.properties", "liferay-marketplace.properties")
+			}
+		}
+
+		def tree = fileTree('build/lpkg/formsWorkflow')
+		tree.include '*workflow*'
+		tree.include '*polls*'
+		tree.each { it.delete() }
+	}
+
+	finalizedBy zipFormsWorkflow
 }
 
 unzipLiferay.dependsOn downloadLiferay
