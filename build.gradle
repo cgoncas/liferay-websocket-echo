@@ -104,6 +104,7 @@ task overrideCollaboration {
 		tree.include '*wiki*'
 		tree.include '*blog*'
 		tree.include '*announcements*'
+		tree.include '*bookmarks*'
 		tree.each { it.delete() }
 	}
 
